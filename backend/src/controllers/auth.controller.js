@@ -102,6 +102,27 @@ class AuthController {
       });
     }
   }
+
+  // Google OAuth callback
+  async googleCallback(req, res) {
+    try {
+      const user = req.user;
+      const token = authService.generateToken(user._id);
+
+      const clientURL = process.env.CLIENT_URL || 'http://localhost:5173';
+      res.redirect(`${clientURL}/auth/callback?token=${token}&user=${encodeURIComponent(JSON.stringify({
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        fullName: user.fullName,
+        role: user.role,
+        avatar: user.avatar
+      }))}`);
+    } catch (error) {
+      const clientURL = process.env.CLIENT_URL || 'http://localhost:5173';
+      res.redirect(`${clientURL}/login?error=${encodeURIComponent(error.message)}`);
+    }
+  }
 }
 
 module.exports = new AuthController();
