@@ -3,10 +3,11 @@ const router = express.Router();
 const passport = require('passport');
 const authController = require('../controllers/auth.controller');
 const authMiddleware = require('../middlewares/auth.middleware');
+const validationMiddleware = require('../middlewares/validation.middleware');
 
 // Public routes
-router.post('/register', authController.register);
-router.post('/login', authController.login);
+router.post('/register', validationMiddleware.validateRegister, authController.register);
+router.post('/login', validationMiddleware.validateLogin, authController.login);
 
 // Google OAuth routes
 router.get('/google',
@@ -26,8 +27,8 @@ router.get('/google/callback',
 
 // Protected routes
 router.get('/profile', authMiddleware.protect, authController.getProfile);
-router.put('/profile', authMiddleware.protect, authController.updateProfile);
-router.post('/change-password', authMiddleware.protect, authController.changePassword);
+router.put('/profile', authMiddleware.protect, validationMiddleware.validateUpdateProfile, authController.updateProfile);
+router.post('/change-password', authMiddleware.protect, validationMiddleware.validateChangePassword, authController.changePassword);
 router.post('/logout', authMiddleware.protect, authController.logout);
 
 module.exports = router;
