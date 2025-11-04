@@ -1,5 +1,4 @@
 const roomService = require('../services/room.service');
-const AuditLog = require('../models/auditLog.model');
 
 class RoomController {
   // Get all rooms
@@ -50,17 +49,6 @@ class RoomController {
     try {
       const room = await roomService.createRoom(req.body);
 
-      // Log audit
-      await AuditLog.create({
-        user: req.user.id,
-        action: 'create',
-        resource: 'room',
-        resourceId: room._id,
-        details: { name: room.name, code: room.code },
-        ipAddress: req.ip,
-        userAgent: req.get('user-agent')
-      });
-
       res.status(201).json({
         success: true,
         data: room
@@ -78,17 +66,6 @@ class RoomController {
     try {
       const room = await roomService.updateRoom(req.params.id, req.body);
 
-      // Log audit
-      await AuditLog.create({
-        user: req.user.id,
-        action: 'update',
-        resource: 'room',
-        resourceId: room._id,
-        details: req.body,
-        ipAddress: req.ip,
-        userAgent: req.get('user-agent')
-      });
-
       res.status(200).json({
         success: true,
         data: room
@@ -105,16 +82,6 @@ class RoomController {
   async deleteRoom(req, res) {
     try {
       const result = await roomService.deleteRoom(req.params.id);
-
-      // Log audit
-      await AuditLog.create({
-        user: req.user.id,
-        action: 'delete',
-        resource: 'room',
-        resourceId: req.params.id,
-        ipAddress: req.ip,
-        userAgent: req.get('user-agent')
-      });
 
       res.status(200).json({
         success: true,
@@ -169,4 +136,3 @@ class RoomController {
 }
 
 module.exports = new RoomController();
-

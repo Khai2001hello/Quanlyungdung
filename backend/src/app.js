@@ -9,8 +9,6 @@ const logger = require('./utils/logger');
 // Import routes
 const authRoutes = require('./routes/auth.routes');
 const roomRoutes = require('./routes/room.routes');
-const bookingRoutes = require('./routes/booking.routes');
-const exportRoutes = require('./routes/export.routes');
 
 const app = express();
 
@@ -59,20 +57,16 @@ app.get('/health', (req, res) => {
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/rooms', roomRoutes);
-app.use('/api/bookings', bookingRoutes);
-app.use('/api/export', exportRoutes);
 
 // Welcome route
 app.get('/', (req, res) => {
   res.json({
     success: true,
-    message: 'Welcome to Meeting Room Management API',
+    message: 'Welcome to Meeting Room Management API - Milestone 1',
     version: '1.0.0',
     endpoints: {
       auth: '/api/auth',
-      rooms: '/api/rooms',
-      bookings: '/api/bookings',
-      export: '/api/export'
+      rooms: '/api/rooms'
     }
   });
 });
