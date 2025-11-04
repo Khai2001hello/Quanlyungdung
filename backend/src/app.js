@@ -8,7 +8,6 @@ const logger = require('./utils/logger');
 
 // Import routes
 const authRoutes = require('./routes/auth.routes');
-const roomRoutes = require('./routes/room.routes');
 
 const app = express();
 
@@ -54,9 +53,13 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Ping test route (Milestone 1 requirement)
+app.get('/ping', (req, res) => {
+  res.status(200).send('Server OK');
+});
+
 // API routes
 app.use('/api/auth', authRoutes);
-app.use('/api/rooms', roomRoutes);
 
 // Welcome route
 app.get('/', (req, res) => {
@@ -65,9 +68,9 @@ app.get('/', (req, res) => {
     message: 'Welcome to Meeting Room Management API - Milestone 1',
     version: '1.0.0',
     endpoints: {
-      auth: '/api/auth',
-      rooms: '/api/rooms'
-    }
+      auth: '/api/auth'
+    },
+    note: 'Room API will be available in Milestone 2'
   });
 });
 
