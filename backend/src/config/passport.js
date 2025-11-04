@@ -1,6 +1,5 @@
 const passport = require('passport');
 const { Strategy: JwtStrategy, ExtractJwt } = require('passport-jwt');
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const User = require('../models/user.model');
 
 // JWT Strategy
@@ -25,10 +24,12 @@ passport.use(
   })
 );
 
-// Google OAuth Strategy
+// Google OAuth Strategy (optional - requires passport-google-oauth20 package)
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
-  passport.use(
-    new GoogleStrategy(
+  try {
+    const GoogleStrategy = require('passport-google-oauth20').Strategy;
+    passport.use(
+      new GoogleStrategy(
       {
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -83,6 +84,9 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
       done(error, null);
     }
   });
+  } catch (error) {
+    console.log('Google OAuth not configured - passport-google-oauth20 package not installed');
+  }
 }
 
 module.exports = passport;
