@@ -49,6 +49,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
               user.googleId = profile.id;
               user.provider = 'google';
               user.avatar = profile.photos[0]?.value;
+              user.isEmailVerified = true; // Auto-verify Google OAuth users
               await user.save();
             } else {
               // Create new user
@@ -58,7 +59,8 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
                 username: profile.emails[0].value.split('@')[0] + '_' + Date.now(),
                 fullName: profile.displayName,
                 provider: 'google',
-                avatar: profile.photos[0]?.value
+                avatar: profile.photos[0]?.value,
+                isEmailVerified: true // Auto-verify Google OAuth users
               });
             }
           }

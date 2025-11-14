@@ -5,14 +5,17 @@ class AuthMiddleware {
   // Protect routes - verify JWT token
   async protect(req, res, next) {
     try {
+      console.log('Auth Headers:', req.headers);
       let token;
 
       // Check if token exists in headers
       if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
         token = req.headers.authorization.split(' ')[1];
+        console.log('Token found:', token);
       }
 
       if (!token) {
+        console.log('No token found in request');
         return res.status(401).json({
           success: false,
           message: 'Not authorized to access this route. Please login.'

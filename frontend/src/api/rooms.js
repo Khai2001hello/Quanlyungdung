@@ -15,12 +15,16 @@ export const roomsAPI = {
 
   // Create new room (admin only)
   async createRoom(data) {
+    // data đã là FormData từ RoomForm
+    // Không set Content-Type thủ công, để axios tự động xử lý boundary
     const response = await axiosInstance.post('/rooms', data);
     return response.data;
   },
 
   // Update room (admin only)
   async updateRoom(id, data) {
+    // data đã là FormData từ RoomForm
+    // Không set Content-Type thủ công, để axios tự động xử lý boundary
     const response = await axiosInstance.put(`/rooms/${id}`, data);
     return response.data;
   },

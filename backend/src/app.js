@@ -2,22 +2,32 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const helmet = require('helmet');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./config/swagger');
 const passport = require('./config/passport');
 const errorMiddleware = require('./middlewares/error.middleware');
 const logger = require('./utils/logger');
 
 // Import routes
 const authRoutes = require('./routes/auth.routes');
+const roomRoutes = require('./routes/room.routes');
+const bookingRoutes = require('./routes/booking.routes');
+const userRoutes = require('./routes/user.routes');
 
 const app = express();
 
-// Security middleware
-app.use(helmet());
+// Security middleware - Tắt crossOriginResourcePolicy để cho phép load images
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
 
 // CORS middleware
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
-  credentials: true
+  origin: '*',  // Allow all origins
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+  exposedHeaders: ['Content-Length', 'Content-Type']
 }));
 
 // Body parser middleware
@@ -44,6 +54,12 @@ app.use((req, res, next) => {
 // Initialize passport
 app.use(passport.initialize());
 
+// Swagger API Documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'Room Booking API Docs'
+}));
+
 // Health check route
 app.get('/health', (req, res) => {
   res.status(200).json({
@@ -60,17 +76,23 @@ app.get('/ping', (req, res) => {
 
 // API routes
 app.use('/api/auth', authRoutes);
+app.use('/api/rooms', roomRoutes);
+app.use('/api/bookings', bookingRoutes);
+app.use('/api/users', userRoutes);
 
 // Welcome route
 app.get('/', (req, res) => {
   res.json({
     success: true,
-    message: 'Welcome to Meeting Room Management API - Milestone 1',
-    version: '1.0.0',
+    message: 'Welcome to Meeting Room Management API - Milestone 2',
+    version: '2.0.0',
+    documentation: '/api-docs',
     endpoints: {
-      auth: '/api/auth'
-    },
-    note: 'Room API will be available in Milestone 2'
+      auth: '/api/auth',
+      rooms: '/api/rooms',
+      bookings: '/api/bookings',
+      users: '/api/users'
+    }
   });
 });
 
@@ -82,3 +104,4 @@ app.use(errorMiddleware.errorHandler);
 
 module.exports = app;
 
+ 
