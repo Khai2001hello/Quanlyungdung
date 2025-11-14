@@ -91,7 +91,7 @@ const bookingController = {
         }
       });
     } catch (error) {
-      logger.error('Error getting bookings:', error);
+      logger.error('Lỗi khi lấy danh sách đặt phòng:', error);
       return next(error);
     }
   },
@@ -108,7 +108,7 @@ const bookingController = {
       if (!room) {
         return res.status(400).json({
           success: false,
-          message: 'Room is required'
+          message: 'Phòng họp là bắt buộc'
         });
       }
 
@@ -116,7 +116,7 @@ const bookingController = {
       if (!roomExists) {
         return res.status(404).json({
           success: false,
-          message: 'Room not found'
+          message: 'Không tìm thấy phòng họp'
         });
       }
 
@@ -130,7 +130,7 @@ const bookingController = {
       if (conflict) {
         return res.status(409).json({
           success: false,
-          message: 'Room is already booked for this time range'
+          message: 'Phòng họp đã được đặt trong khung giờ này'
         });
       }
 
@@ -188,10 +188,10 @@ const bookingController = {
         });
       }
 
-      logger.error('Error creating booking:', error);
+      logger.error('Lỗi khi tạo đặt phòng:', error);
       return res.status(500).json({
         success: false,
-        message: 'Error creating booking'
+        message: 'Lỗi khi tạo đặt phòng'
       });
     }
   },
@@ -204,7 +204,7 @@ const bookingController = {
       if (!booking) {
         return res.status(404).json({
           success: false,
-          message: 'Booking not found'
+          message: 'Không tìm thấy lịch đặt phòng'
         });
       }
 
@@ -214,7 +214,7 @@ const bookingController = {
       if (!isOwner && !isAdmin) {
         return res.status(403).json({
           success: false,
-          message: 'Not authorized to delete this booking'
+          message: 'Bạn không có quyền hủy lịch đặt phòng này'
         });
       }
 
@@ -272,13 +272,13 @@ const bookingController = {
 
       return res.status(200).json({
         success: true,
-        message: 'Booking cancelled'
+        message: 'Đã hủy lịch đặt phòng thành công'
       });
     } catch (error) {
-      logger.error('Error deleting booking:', error);
+      logger.error('Lỗi khi hủy đặt phòng:', error);
       return res.status(500).json({
         success: false,
-        message: 'Error deleting booking'
+        message: 'Lỗi khi hủy đặt phòng'
       });
     }
   },
@@ -293,14 +293,14 @@ const bookingController = {
       if (!booking) {
         return res.status(404).json({
           success: false,
-          message: 'Booking not found'
+          message: 'Không tìm thấy lịch đặt phòng'
         });
       }
 
       if (booking.status !== 'pending') {
         return res.status(400).json({
           success: false,
-          message: `Cannot approve booking with status: ${booking.status}`
+          message: `Không thể phê duyệt lịch đặt phòng có trạng thái: ${booking.status}`
         });
       }
 
@@ -331,14 +331,14 @@ const bookingController = {
 
       return res.status(200).json({
         success: true,
-        message: 'Booking approved successfully',
+        message: 'Phê duyệt đặt phòng thành công',
         data: booking
       });
     } catch (error) {
-      logger.error('Error approving booking:', error);
+      logger.error('Lỗi khi phê duyệt đặt phòng:', error);
       return res.status(500).json({
         success: false,
-        message: 'Error approving booking'
+        message: 'Lỗi khi phê duyệt đặt phòng'
       });
     }
   },
@@ -354,14 +354,14 @@ const bookingController = {
       if (!booking) {
         return res.status(404).json({
           success: false,
-          message: 'Booking not found'
+          message: 'Không tìm thấy lịch đặt phòng'
         });
       }
 
       if (booking.status !== 'pending') {
         return res.status(400).json({
           success: false,
-          message: `Cannot reject booking with status: ${booking.status}`
+          message: `Không thể từ chối lịch đặt phòng có trạng thái: ${booking.status}`
         });
       }
 
@@ -396,13 +396,13 @@ const bookingController = {
 
       return res.status(200).json({
         success: true,
-        message: 'Booking rejected successfully'
+        message: 'Từ chối đặt phòng thành công'
       });
     } catch (error) {
-      logger.error('Error rejecting booking:', error);
+      logger.error('Lỗi khi từ chối đặt phòng:', error);
       return res.status(500).json({
         success: false,
-        message: 'Error rejecting booking'
+        message: 'Lỗi khi từ chối đặt phòng'
       });
     }
   },
@@ -486,10 +486,10 @@ const bookingController = {
       return res.send(buffer);
 
     } catch (error) {
-      logger.error('Error exporting bookings:', error);
+      logger.error('Lỗi khi xuất danh sách đặt phòng:', error);
       return res.status(500).json({
         success: false,
-        message: 'Error exporting bookings to Excel'
+        message: 'Lỗi khi xuất danh sách đặt phòng ra Excel'
       });
     }
   }
