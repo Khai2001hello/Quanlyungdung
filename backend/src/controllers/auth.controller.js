@@ -123,6 +123,41 @@ class AuthController {
       res.redirect(`${clientURL}/login?error=${encodeURIComponent(error.message)}`);
     }
   }
+
+  // Verify email with token
+  async verifyEmail(req, res) {
+    try {
+      const { token } = req.params;
+      const result = await authService.verifyEmail(token);
+
+      res.status(200).json({
+        success: true,
+        message: result.message
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
+
+  // Resend verification email
+  async resendVerification(req, res) {
+    try {
+      const result = await authService.resendVerification(req.user.id);
+
+      res.status(200).json({
+        success: true,
+        message: result.message
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
 }
 
 module.exports = new AuthController();

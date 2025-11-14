@@ -20,13 +20,14 @@ const Register = () => {
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      await authAPI.register({
+      const response = await authAPI.register({
         username: data.email.split('@')[0], // Tạo username từ email
         fullName: data.name,
         email: data.email,
         password: data.password,
       });
-      toast.success('Đăng ký thành công! Vui lòng đăng nhập.');
+      const message = response.data?.message || 'Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.';
+      toast.success(message, { duration: 5000 });
       navigate('/login');
     } catch (error) {
       console.error('Register error:', error);

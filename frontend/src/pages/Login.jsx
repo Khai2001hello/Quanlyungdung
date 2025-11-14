@@ -113,11 +113,16 @@ const Login = () => {
 
             <Button type="submit" className="w-full h-11 font-medium" disabled={loading}>
               {loading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Đang đăng nhập...
+                </>
               ) : (
-                <LogIn className="mr-2 h-4 w-4" />
+                <>
+                  <LogIn className="mr-2 h-4 w-4" />
+                  Đăng nhập
+                </>
               )}
-              Đăng nhập
             </Button>
           </form>
 

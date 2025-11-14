@@ -36,7 +36,7 @@ const AuthCallback = () => {
     }
   }, [searchParams, navigate]);
 
-  return <Loading />;
+  return <Loading fullscreen type="github" />;
 };
 
 export default AuthCallback;

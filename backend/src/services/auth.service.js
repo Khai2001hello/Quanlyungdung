@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const User = require('../models/user.model');
+const emailService = require('./email.service');
 
 class AuthService {
   // Generate JWT token
@@ -26,7 +28,22 @@ class AuthService {
     }
 
     try {
-      const user = await User.create(userData);
+      // 🔓 AUTO-VERIFY: Tự động xác thực email khi đăng ký (không cần email thật)
+      const user = await User.create({
+        ...userData,
+        isEmailVerified: true, // Auto-verify all users
+        emailVerificationToken: undefined,
+        emailVerificationExpires: undefined
+      });
+
+      // ⚠️ OPTIONAL: Uncomment để gửi email xác thực (cần config SMTP)
+      // const verificationToken = crypto.randomBytes(32).toString('hex');
+      // const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+      // user.emailVerificationToken = verificationToken;
+      // user.emailVerificationExpires = verificationExpires;
+      // await user.save();
+      // await emailService.sendVerificationEmail(user, verificationToken);
+
       const token = this.generateToken(user._id);
 
       return {
@@ -36,9 +53,11 @@ class AuthService {
           email: user.email,
           fullName: user.fullName,
           role: user.role,
-          department: user.department
+          department: user.department,
+          isEmailVerified: user.isEmailVerified
         },
-        token
+        token,
+        message: 'Đăng ký thành công! Bạn có thể đăng nhập ngay.'
       };
     } catch (error) {
       // Handle mongoose validation errors
@@ -155,6 +174,55 @@ class AuthService {
     await user.save();
 
     return { message: 'Đổi mật khẩu thành công' };
+  }
+
+  // Verify email with token
+  async verifyEmail(token) {
+    const user = await User.findOne({
+      emailVerificationToken: token,
+      emailVerificationExpires: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      throw new Error('Token xác thực không hợp lệ hoặc đã hết hạn');
+    }
+
+    user.isEmailVerified = true;
+    user.emailVerificationToken = undefined;
+    user.emailVerificationExpires = undefined;
+    await user.save();
+
+    return { message: 'Xác thực email thành công! Bạn có thể đăng nhập và sử dụng đầy đủ tính năng.' };
+  }
+
+  // Resend verification email
+  async resendVerification(userId) {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      throw new Error('Không tìm thấy người dùng');
+    }
+
+    if (user.isEmailVerified) {
+      throw new Error('Email đã được xác thực rồi');
+    }
+
+    if (user.provider === 'google') {
+      throw new Error('Tài khoản Google đã được xác thực tự động');
+    }
+
+    // Generate new verification token
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+    user.emailVerificationToken = verificationToken;
+    user.emailVerificationExpires = verificationExpires;
+    await user.save();
+
+    // Send verification email
+    await emailService.sendVerificationEmail(user, verificationToken);
+
+    return { message: 'Email xác thực đã được gửi lại. Vui lòng kiểm tra hộp thư.' };
   }
 }
 
